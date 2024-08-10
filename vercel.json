@@ -7,6 +7,7 @@
       }
     ],
     "routes": [
-      { "src": "/api/bot", "dest": "bot.js" }
+      { "src": "/(.*)", "dest": "bot.js" }
     ]
   }
+  
