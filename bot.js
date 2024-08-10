@@ -1,13 +1,13 @@
-// bot.js
+// api/webhook.js
 const { Telegraf } = require('telegraf');
 const fetch = require('node-fetch');
 const fs = require('fs').promises;
-const { promptTemplate } = require('./prompt.js');
+const path = require('path');
 
 // Инициализация ботов с токенами из переменных окружения
-const mainBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN_ALFA);
-const logBot = new Telegraf(process.env.NEW_TELEGRAM_BOT_TOKEN);
-const dataBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+const mainBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN_ALFA); // Основной бот
+const logBot = new Telegraf(process.env.NEW_TELEGRAM_BOT_TOKEN); // Бот для логов
+const dataBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN); // Бот для данных
 
 let coffeeData = {};
 let userStates = {};
@@ -15,7 +15,7 @@ let userStates = {};
 // Загрузка данных о кофе
 async function loadCoffeeData() {
   try {
-    const data = await fs.readFile('coffee_data.json', 'utf8');
+    const data = await fs.readFile(path.join(process.cwd(), 'coffee_data.json'), 'utf8');
     coffeeData = JSON.parse(data);
     console.log('Coffee data loaded successfully');
   } catch (error) {
@@ -124,6 +124,7 @@ async function processMessage(userId, userName, userMessage) {
 
   const fixedContext = ensureAlternatingRoles(userStates[userId].context);
 
+  const promptTemplate = await fs.readFile(path.join(process.cwd(), 'prompt.js'), 'utf8');
   const filledPrompt = promptTemplate
     .replace('{{COFFEE_DOCUMENT}}', JSON.stringify(coffeeData))
     .replace('{{USER_INPUT}}', userMessage)
@@ -211,19 +212,29 @@ mainBot.on('text', async (ctx) => {
 });
 
 // Инициализация бота
+let botInitialized = false;
 async function initBot() {
-  await loadCoffeeData();
-  console.log('Bot initialized');
+  if (!botInitialized) {
+    await loadCoffeeData();
+    console.log('Bot initialized');
+    botInitialized = true;
+  }
 }
 
 // Функция для обработки вебхука
 module.exports = async (req, res) => {
-  if (req.method === 'POST') {
+  try {
     await initBot();
-    await mainBot.handleUpdate(req.body, res);
-    res.status(200).send('OK');
-  } else {
-    res.status(200).json({ message: 'Webhook is set up correctly' });
+    
+    if (req.method === 'POST') {
+      await mainBot.handleUpdate(req.body);
+      res.status(200).send('OK');
+    } else {
+      res.status(200).json({ message: 'Webhook is set up correctly' });
+    }
+  } catch (error) {
+    console.error('Error in webhook handler:', error);
+    res.status(500).json({ error: 'Internal Server Error', details: error.message });
   }
 };
 
