@@ -1,0 +1,259 @@
+{
+    "rentInfo": {
+      "description": "JetCup предлагает бесплатную аренду капсульных кофемашин Lavazza при условии ежемесячной покупки капсул.",
+      "machines": [
+        {
+          "model": "Inovy Mini",
+          "features": "Для приготовления эспрессо и американо",
+          "capsules_per_month": 48,
+          "cups_per_day": "1-2"
+        },
+        {
+          "model": "LF400 Milk",
+          "features": "Для приготовления капучино и других напитков с молоком",
+          "capsules_per_month": 96,
+          "cups_per_day": "3-4"
+        },
+        {
+          "model": "Inovy Milk",
+          "features": "Позволяет готовить 6 видов кофе с молоком и без",
+          "capsules_per_month": 144,
+          "cups_per_day": "4-5"
+        }
+      ],
+      "conditions": [
+        "Доступна аренда для юридических и физических лиц",
+        "Бесплатное сервисное обслуживание и замена оборудования при неисправности",
+        "Доступно в крупных городах Украины: Киев, Львов, Днепр, Харьков, Одесса",
+        "Минимальный срок аренды - 1 месяц"
+      ],
+      "howToRent": [
+        "Свяжитесь с компанией по телефону или оставьте заявку на сайте",
+        "Менеджер предоставит информацию и организует дегустацию",
+        "Заключите договор аренды",
+        "Получите персональное обслуживание и доставку капсул"
+      ]
+    },
+    "coffeeTypes": [
+      {
+        "name": "Crema e Gusto Classico",
+        "quantity": 48,
+        "price_per_capsule": 18.8,
+        "price_per_pack": 950,
+        "discounted_price": 900,
+        "description": "Бленд арабики и робусты с насыщенным, крепким вкусом, ореховыми и шоколадными нотками."
+      },
+      {
+        "name": "Gran Cafè Paulista",
+        "quantity": 48,
+        "price_per_capsule": 18.8,
+        "price_per_pack": 950,
+        "discounted_price": 900,
+        "description": "Смесь арабики и робусты с ярким вкусом, сладкими фруктовыми нотками и легкой горчинкой."
+      },
+      {
+        "name": "Tierra Bio Intenso",
+        "quantity": 48,
+        "price_per_capsule": 20.8,
+        "price_per_pack": 1050,
+        "discounted_price": 1000,
+        "description": "Органический кофе с насыщенным ароматом и интенсивным вкусом, нотками какао и фруктов."
+      }
+    ],
+    "discounts": [
+      {
+        "condition": "При покупке от 3 упаковок",
+        "price_per_capsule": 15.6
+      },
+      {
+        "condition": "При покупке от 5 упаковок",
+        "price_per_capsule": 14.6
+      }
+    ],
+    "howToOrder": [
+      "Выберите кофе из каталога",
+      "Оформите заказ на сайте",
+      "Ожидайте доставку курьером"
+    ],
+    "contacts": {
+      "phone": "0 (800) 21-99-98",
+      "workingHours": "ПН-ПТ, с 9:00 до 18:00"
+    },
+"rentInfo": {
+      "description": "JetCup предлагает бесплатную аренду капсульных кофемашин Lavazza при условии ежемесячной покупки капсул.",
+      "machines": [
+        {
+          "model": "Inovy Mini",
+          "features": "Для приготовления эспрессо и американо",
+          "capsules_per_month": 48,
+          "cups_per_day": "1-2"
+        },
+        {
+          "model": "LF400 Milk",
+          "features": "Для приготовления капучино и других напитков с молоком",
+          "capsules_per_month": 96,
+          "cups_per_day": "3-4"
+        },
+        {
+          "model": "Inovy Milk",
+          "features": "Позволяет готовить 6 видов кофе с молоком и без",
+          "capsules_per_month": 144,
+          "cups_per_day": "4-5"
+        }
+      ],
+      "conditions": [
+        "Доступна аренда для юридических и физических лиц",
+        "Бесплатное сервисное обслуживание и замена оборудования при неисправности",
+        "Доступно в крупных городах Украины: Киев, Львов, Днепр, Харьков, Одесса",
+        "Минимальный срок аренды - 1 месяц",
+        "Возможны индивидуальные условия для краткосрочных нужд"
+      ],
+      "howToRent": [
+        "Свяжитесь с компанией по телефону или оставьте заявку на сайте",
+        "Менеджер предоставит информацию и организует дегустацию",
+        "Заключите договор аренды",
+        "Получите персональное обслуживание и доставку капсул"
+      ]
+    },
+    "coffeeTypes": [
+      {
+        "name": "Crema e Gusto Classico",
+        "quantity": 48,
+        "price_per_capsule": 18.8,
+        "price_per_pack": 950,
+        "discounted_price": 900,
+        "description": "Бленд арабики и робусты с насыщенным, крепким вкусом, ореховыми и шоколадными нотками."
+      },
+      {
+        "name": "Gran Cafè Paulista",
+        "quantity": 48,
+        "price_per_capsule": 18.8,
+        "price_per_pack": 950,
+        "discounted_price": 900,
+        "description": "Смесь арабики и робусты с ярким вкусом, сладкими фруктовыми нотками и легкой горчинкой."
+      },
+      {
+        "name": "Tierra Bio Intenso",
+        "quantity": 48,
+        "price_per_capsule": 20.8,
+        "price_per_pack": 1050,
+        "discounted_price": 1000,
+        "description": "Органический кофе с насыщенным ароматом и интенсивным вкусом, нотками какао и фруктов."
+      },
+      {
+        "name": "Tierra Bio Aromatico",
+        "quantity": 48,
+        "price_per_capsule": 20.8,
+        "price_per_pack": 1050,
+        "discounted_price": 1000,
+        "description": "Легкий аромат и нежный вкус с цветочными и цитрусовыми оттенками. Прекрасно подходит для мягкого утреннего кофе."
+      },
+      {
+        "name": "Crema e Gusto Forte",
+        "quantity": 48,
+        "price_per_capsule": 18.8,
+        "price_per_pack": 950,
+        "discounted_price": 900,
+        "description": "Более крепкая версия Crema e Gusto Classico. Насыщенный вкус с кремовой текстурой и длительным послевкусием."
+      },
+      {
+        "name": "TIERRA Decerato",
+        "quantity": 48,
+        "price_per_capsule": 20.8,
+        "price_per_pack": 1050,
+        "discounted_price": 1000,
+        "description": "Декафеинизированный кофе с мягким вкусом и минимальным содержанием кофеина."
+      },
+      {
+        "name": "Espresso Gustoso",
+        "quantity": 48,
+        "price_per_capsule": 17.7,
+        "price_per_pack": 900,
+        "discounted_price": 850,
+        "description": "Ароматный эспрессо с насыщенным вкусом и бархатистой текстурой. Хорошо сочетается с молоком для латте или капучино."
+      },
+      {
+        "name": "LUNGO VIVACE",
+        "quantity": 48,
+        "price_per_capsule": 20.8,
+        "price_per_pack": 1050,
+        "discounted_price": 1000,
+        "description": "Смесь для тех, кто предпочитает легкий и длинный кофе. Обладает богатым вкусом и сладким послевкусием."
+      },
+      {
+        "name": "QUALITÀ ORO",
+        "quantity": 48,
+        "price_per_capsule": 18.8,
+        "price_per_pack": 950,
+        "discounted_price": 900,
+        "description": "Классический итальянский бленд с мягким и сладким вкусом. Содержит 100% арабику, предлагает цветочные и фруктовые ноты."
+      },
+      {
+        "name": "Qualita Rossa",
+        "quantity": 48,
+        "price_per_capsule": 18.8,
+        "price_per_pack": 950,
+        "discounted_price": 900,
+        "description": "Бленд с богатым и насыщенным вкусом. Обладает крепким характером с легкой горчинкой."
+      },
+      {
+        "name": "Espresso Decaffeinato",
+        "quantity": 24,
+        "price_per_capsule": 19.8,
+        "price_per_pack": 500,
+        "discounted_price": 475,
+        "description": "Декафеинизированный эспрессо с мягким вкусом. Идеален для тех, кто избегает кофеина, но хочет насладиться вкусом кофе."
+      },
+      {
+        "name": "Al Limone",
+        "quantity": 24,
+        "price_per_capsule": 18.9,
+        "price_per_pack": 450,
+        "discounted_price": 425,
+        "description": "Кофе с лимонными нотками. Освежающий и легкий, подходит для любителей необычных вкусов."
+      },
+      {
+        "name": "Orzo",
+        "quantity": 24,
+        "price_per_capsule": 18.9,
+        "price_per_pack": 450,
+        "discounted_price": 425,
+        "description": "Напиток из ячменя, известный своим легким вкусом. Подходит для тех, кто ищет альтернативу кофе без кофеина."
+      },
+      {
+        "name": "Caffe Ginseng",
+        "quantity": 24,
+        "price_per_capsule": 18.9,
+        "price_per_pack": 450,
+        "discounted_price": 425,
+        "description": "Кофе с добавлением женьшеня. Обладает тонизирующими свойствами и уникальным вкусом."
+      },
+      {
+        "name": "Bevanda Bianca",
+        "quantity": 24,
+        "price_per_capsule": 18.9,
+        "price_per_pack": 450,
+        "discounted_price": 425,
+        "description": "Молочный напиток с мягким вкусом. Идеален для добавления в кофе или как самостоятельный напиток."
+      }
+    ],
+    "discounts": [
+      {
+        "condition": "При покупке от 3 упаковок",
+        "price_per_capsule": 15.6
+      },
+      {
+        "condition": "При покупке от 5 упаковок",
+        "price_per_capsule": 14.6
+      }
+    ],
+    "howToOrder": [
+      "Выберите кофе из каталога на сайте",
+      "Добавьте выбранные капсулы в корзину",
+      "Оформите заказ",
+      "Ожидайте доставку курьером в удобное для вас время"
+    ]
+    
+  }
+  
+    
