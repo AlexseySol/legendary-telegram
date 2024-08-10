@@ -113,6 +113,8 @@ async function fetchWithRetry(url, options, maxRetries = 3, initialDelay = 1000)
 
 // Основная функция обработки сообщений от пользователей
 async function processMessage(userId, userName, userMessage) {
+  console.log(`Processing message from ${userName} (${userId}): ${userMessage}`); // Отладка
+
   if (!userStates[userId]) {
     userStates[userId] = { 
       context: [],
@@ -150,6 +152,7 @@ async function processMessage(userId, userName, userMessage) {
 
     if (data && data.content && data.content[0] && data.content[0].text) {
       const replyMessage = data.content[0].text;
+      console.log(`Received response from API: ${replyMessage}`); // Отладка
       
       const responseMatch = replyMessage.match(/<response>([\s\S]*?)<\/response>/);
       if (responseMatch) {
@@ -201,11 +204,13 @@ mainBot.start((ctx) => {
 
 // Обработка текстовых сообщений
 mainBot.on('text', async (ctx) => {
+  console.log('Received a message from Telegram'); // Отладка
   const userId = ctx.from.id.toString();
   const userName = ctx.from.first_name || ctx.from.username;
   const userMessage = ctx.message.text;
 
   const response = await processMessage(userId, userName, userMessage);
+  console.log(`Sending response to ${userName} (${userId}): ${response}`); // Отладка
   ctx.reply(response);
 });
 
@@ -250,6 +255,7 @@ process.once('SIGTERM', () => {
   logBot.stop('SIGTERM');
   dataBot.stop('SIGTERM');
 });
+
 
 
 
