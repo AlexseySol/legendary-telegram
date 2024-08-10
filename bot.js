@@ -6,10 +6,10 @@ const fs = require('fs').promises;
 const path = require('path');
 const { promptTemplate } = require('./prompt.js');
 
-// Инициализация ботов с токенами
-const mainBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN_ALFA);
-const logBot = new Telegraf(process.env.NEW_TELEGRAM_BOT_TOKEN);
-const dataBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+// Инициализация ботов с токенами из переменных окружения
+const mainBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN_ALFA); // Основной бот
+const logBot = new Telegraf(process.env.NEW_TELEGRAM_BOT_TOKEN); // Бот для логов
+const dataBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN); // Бот для данных
 
 let coffeeData = {};
 let userStates = {};
@@ -226,7 +226,10 @@ async function startBot() {
   const app = express();
 
   // Маршрут для обработки вебхука
-  app.use(mainBot.webhookCallback(`/bot${process.env.TELEGRAM_BOT_TOKEN_ALFA}`));
+  app.use(express.json()); // Для обработки JSON-запросов от Telegram
+  app.post(`/bot${process.env.TELEGRAM_BOT_TOKEN_ALFA}`, (req, res) => {
+    mainBot.handleUpdate(req.body, res);
+  });
 
   // Простой маршрут для проверки сервера
   app.get('/', (req, res) => {
@@ -255,6 +258,7 @@ process.once('SIGTERM', () => {
   logBot.stop('SIGTERM');
   dataBot.stop('SIGTERM');
 });
+
 
 
 
