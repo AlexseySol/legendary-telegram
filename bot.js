@@ -1,9 +1,7 @@
 require('dotenv').config();
 const { Telegraf } = require('telegraf');
-const express = require('express');
 const fetch = require('node-fetch');
 const fs = require('fs').promises;
-const path = require('path');
 const { promptTemplate } = require('./prompt.js');
 
 // Инициализация ботов с токенами из переменных окружения
@@ -214,51 +212,27 @@ mainBot.on('text', async (ctx) => {
   ctx.reply(response);
 });
 
-// Функция для старта бота
-async function startBot() {
+// Инициализация бота
+async function initBot() {
   await loadCoffeeData();
-  
-  // Установка вебхука
-  const webhookUrl = `${process.env.VERCEL_URL}/bot${process.env.TELEGRAM_BOT_TOKEN_ALFA}`;
-  console.log(`Setting webhook to: ${webhookUrl}`);
-  await mainBot.telegram.setWebhook(webhookUrl);
-
-  const app = express();
-
-  // Маршрут для обработки вебхука
-  app.use(express.json()); // Для обработки JSON-запросов от Telegram
-  app.post(`/bot${process.env.TELEGRAM_BOT_TOKEN_ALFA}`, (req, res) => {
-    mainBot.handleUpdate(req.body, res);
-  });
-
-  // Простой маршрут для проверки сервера
-  app.get('/', (req, res) => {
-    res.send('Server is running!');
-  });
-
-  // Запуск сервера на порту 3000
-  app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-  });
+  console.log('Bot initialized');
 }
 
-// Запуск бота
-startBot().catch(error => {
-  console.error('Error starting bots:', error);
-});
+// Функция для обработки вебхука
+module.exports = async (req, res) => {
+  await initBot();
+  
+  if (req.method === 'POST') {
+    await mainBot.handleUpdate(req.body, res);
+  } else {
+    res.status(200).json({ message: 'Webhook is set up correctly' });
+  }
+};
 
-// Остановка ботов при завершении процесса
-process.once('SIGINT', () => {
-  mainBot.stop('SIGINT');
-  logBot.stop('SIGINT');
-  dataBot.stop('SIGINT');
-});
-process.once('SIGTERM', () => {
-  mainBot.stop('SIGTERM');
-  logBot.stop('SIGTERM');
-  dataBot.stop('SIGTERM');
-});
-
+// Экспорт ботов для использования в других частях приложения, если необходимо
+module.exports.mainBot = mainBot;
+module.exports.logBot = logBot;
+module.exports.dataBot = dataBot;
 
 
 
