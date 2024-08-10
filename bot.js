@@ -1,35 +1,19 @@
 require('dotenv').config();
 const { Telegraf } = require('telegraf');
-const express = require('express');
 const fetch = require('node-fetch');
-const fs = require('fs').promises;
-const path = require('path');
 const { promptTemplate } = require('./prompt.js');
 
-// Инициализация ботов с токенами из переменных окружения
-const mainBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN_ALFA); // Основной бот
-const logBot = new Telegraf(process.env.NEW_TELEGRAM_BOT_TOKEN); // Бот для логов
-const dataBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN); // Бот для данных
+// Инициализация ботов
+const mainBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN_ALFA);
+const logBot = new Telegraf(process.env.NEW_TELEGRAM_BOT_TOKEN);
+const dataBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
-let coffeeData = {};
+let coffeeData = {
+  'Эспрессо': { description: 'Крепкий кофе', price: 30 },
+  'Капучино': { description: 'Кофе с молочной пенкой', price: 40 }
+};
 let userStates = {};
 
-// Загрузка данных о кофе
-async function loadCoffeeData() {
-  try {
-    const data = await fs.readFile('coffee_data.json', 'utf8');
-    coffeeData = JSON.parse(data);
-    console.log('Coffee data loaded successfully');
-  } catch (error) {
-    console.warn(`Error loading coffee data: ${error.message}`);
-    coffeeData = {
-      'Эспрессо': { description: 'Крепкий кофе', price: 30 },
-      'Капучино': { description: 'Кофе с молочной пенкой', price: 40 }
-    };
-  }
-}
-
-// Сохранение данных заказа в Telegram
 async function saveToJson(userId, data) {
   try {
     const orderMessage = `Новый заказ:\nИмя: ${data.name}\nEmail: ${data.email}\nТелефон: ${data.phone}\nАдрес: ${data.address}\nЗаказ: ${data.order}`;
@@ -40,7 +24,6 @@ async function saveToJson(userId, data) {
   }
 }
 
-// Обработка тегов в сообщении
 function extractTags(message) {
   const tags = {};
   const relevantTags = ['email', 'phone', 'address', 'name', 'order'];
@@ -54,7 +37,6 @@ function extractTags(message) {
   return tags;
 }
 
-// Валидация тегов
 function validateTags(tags) {
   const requiredTags = ['email', 'phone', 'address', 'name', 'order'];
   const missingTags = requiredTags.filter(tag => !tags[tag]);
@@ -63,11 +45,9 @@ function validateTags(tags) {
     console.log(`Missing required tags: ${missingTags.join(', ')}`);
     return false;
   }
-
   return true;
 }
 
-// Функция для гарантии чередования ролей в сообщениях
 function ensureAlternatingRoles(context) {
   const fixedContext = [];
   let lastRole = null;
@@ -84,7 +64,6 @@ function ensureAlternatingRoles(context) {
   return fixedContext;
 }
 
-// Функция для выполнения запросов с повторными попытками
 async function fetchWithRetry(url, options, maxRetries = 3, initialDelay = 1000) {
   let lastError;
   for (let i = 0; i < maxRetries; i++) {
@@ -111,9 +90,8 @@ async function fetchWithRetry(url, options, maxRetries = 3, initialDelay = 1000)
   throw lastError;
 }
 
-// Основная функция обработки сообщений от пользователей
 async function processMessage(userId, userName, userMessage) {
-  console.log(`Processing message from ${userName} (${userId}): ${userMessage}`); // Отладка
+  console.log(`Processing message from ${userName} (${userId}): ${userMessage}`);
 
   if (!userStates[userId]) {
     userStates[userId] = { 
@@ -152,7 +130,7 @@ async function processMessage(userId, userName, userMessage) {
 
     if (data && data.content && data.content[0] && data.content[0].text) {
       const replyMessage = data.content[0].text;
-      console.log(`Received response from API: ${replyMessage}`); // Отладка
+      console.log(`Received response from API: ${replyMessage}`);
       
       const responseMatch = replyMessage.match(/<response>([\s\S]*?)<\/response>/);
       if (responseMatch) {
@@ -172,7 +150,6 @@ async function processMessage(userId, userName, userMessage) {
 
         const cleanResponse = responseContent.replace(/<[^>]+>.*?<\/[^>]+>/g, '');
 
-        // Отправляем запрос и ответ в лог-чат в одном сообщении
         const logMessage = `Диалог:\nUser ${userName}: ${userMessage}\nBot: ${cleanResponse}`;
         await logBot.telegram.sendMessage(process.env.NEW_TELEGRAM_CHAT_ID, logMessage);
 
@@ -191,7 +168,6 @@ async function processMessage(userId, userName, userMessage) {
   }
 }
 
-// Настройка бота на команду /start
 mainBot.start((ctx) => {
   const userName = ctx.from.first_name || ctx.from.username;
   const startMessage = `Привет, ${userName}! Я кофейный бот. Чем могу помочь?`;
@@ -202,62 +178,40 @@ mainBot.start((ctx) => {
   logBot.telegram.sendMessage(process.env.NEW_TELEGRAM_CHAT_ID, logMessage);
 });
 
-// Обработка текстовых сообщений
 mainBot.on('text', async (ctx) => {
-  console.log('Received a message from Telegram'); // Отладка
+  console.log('Received a message from Telegram');
   const userId = ctx.from.id.toString();
   const userName = ctx.from.first_name || ctx.from.username;
   const userMessage = ctx.message.text;
 
   const response = await processMessage(userId, userName, userMessage);
-  console.log(`Sending response to ${userName} (${userId}): ${response}`); // Отладка
+  console.log(`Sending response to ${userName} (${userId}): ${response}`);
   ctx.reply(response);
 });
 
-// Функция для старта бота
-async function startBot() {
-  await loadCoffeeData();
-  
-  // Установка вебхука
-  const webhookUrl = `${process.env.VERCEL_URL}/bot${process.env.TELEGRAM_BOT_TOKEN_ALFA}`;
+// Функция для установки вебхука
+async function setupWebhook() {
+  const webhookUrl = `https://${process.env.VERCEL_URL}/api/bot`;
   console.log(`Setting webhook to: ${webhookUrl}`);
   await mainBot.telegram.setWebhook(webhookUrl);
-
-  const app = express();
-
-  // Маршрут для обработки вебхука
-  app.use(express.json()); // Для обработки JSON-запросов от Telegram
-  app.post(`/bot${process.env.TELEGRAM_BOT_TOKEN_ALFA}`, (req, res) => {
-    mainBot.handleUpdate(req.body, res);
-  });
-
-  // Простой маршрут для проверки сервера
-  app.get('/', (req, res) => {
-    res.send('Server is running!');
-  });
-
-  // Запуск сервера на порту 3000
-  app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-  });
 }
 
-// Запуск бота
-startBot().catch(error => {
-  console.error('Error starting bots:', error);
-});
-
-// Остановка ботов при завершении процесса
-process.once('SIGINT', () => {
-  mainBot.stop('SIGINT');
-  logBot.stop('SIGINT');
-  dataBot.stop('SIGINT');
-});
-process.once('SIGTERM', () => {
-  mainBot.stop('SIGTERM');
-  logBot.stop('SIGTERM');
-  dataBot.stop('SIGTERM');
-});
+// Обработчик для Vercel
+module.exports = async (req, res) => {
+  try {
+    if (req.method === 'POST') {
+      await mainBot.handleUpdate(req.body, res);
+    } else if (req.method === 'GET') {
+      await setupWebhook();
+      res.status(200).send('Webhook set up successfully');
+    } else {
+      res.status(200).send('OK');
+    }
+  } catch (error) {
+    console.error('Error in webhook handler:', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
 
 
 
