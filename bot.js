@@ -6,6 +6,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const { promptTemplate } = require('./prompt.js');
 
+// Инициализация ботов с токенами
 const mainBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN_ALFA);
 const logBot = new Telegraf(process.env.NEW_TELEGRAM_BOT_TOKEN);
 const dataBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
@@ -13,6 +14,7 @@ const dataBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 let coffeeData = {};
 let userStates = {};
 
+// Загрузка данных о кофе
 async function loadCoffeeData() {
   try {
     const data = await fs.readFile('coffee_data.json', 'utf8');
@@ -27,6 +29,7 @@ async function loadCoffeeData() {
   }
 }
 
+// Сохранение данных заказа в Telegram
 async function saveToJson(userId, data) {
   try {
     const orderMessage = `Новый заказ:\nИмя: ${data.name}\nEmail: ${data.email}\nТелефон: ${data.phone}\nАдрес: ${data.address}\nЗаказ: ${data.order}`;
@@ -37,6 +40,7 @@ async function saveToJson(userId, data) {
   }
 }
 
+// Обработка тегов в сообщении
 function extractTags(message) {
   const tags = {};
   const relevantTags = ['email', 'phone', 'address', 'name', 'order'];
@@ -50,6 +54,7 @@ function extractTags(message) {
   return tags;
 }
 
+// Валидация тегов
 function validateTags(tags) {
   const requiredTags = ['email', 'phone', 'address', 'name', 'order'];
   const missingTags = requiredTags.filter(tag => !tags[tag]);
@@ -62,6 +67,7 @@ function validateTags(tags) {
   return true;
 }
 
+// Функция для гарантии чередования ролей в сообщениях
 function ensureAlternatingRoles(context) {
   const fixedContext = [];
   let lastRole = null;
@@ -78,6 +84,7 @@ function ensureAlternatingRoles(context) {
   return fixedContext;
 }
 
+// Функция для выполнения запросов с повторными попытками
 async function fetchWithRetry(url, options, maxRetries = 3, initialDelay = 1000) {
   let lastError;
   for (let i = 0; i < maxRetries; i++) {
@@ -104,6 +111,7 @@ async function fetchWithRetry(url, options, maxRetries = 3, initialDelay = 1000)
   throw lastError;
 }
 
+// Основная функция обработки сообщений от пользователей
 async function processMessage(userId, userName, userMessage) {
   if (!userStates[userId]) {
     userStates[userId] = { 
@@ -180,6 +188,7 @@ async function processMessage(userId, userName, userMessage) {
   }
 }
 
+// Настройка бота на команду /start
 mainBot.start((ctx) => {
   const userName = ctx.from.first_name || ctx.from.username;
   const startMessage = `Привет, ${userName}! Я кофейный бот. Чем могу помочь?`;
@@ -190,6 +199,7 @@ mainBot.start((ctx) => {
   logBot.telegram.sendMessage(process.env.NEW_TELEGRAM_CHAT_ID, logMessage);
 });
 
+// Обработка текстовых сообщений
 mainBot.on('text', async (ctx) => {
   const userId = ctx.from.id.toString();
   const userName = ctx.from.first_name || ctx.from.username;
@@ -199,27 +209,37 @@ mainBot.on('text', async (ctx) => {
   ctx.reply(response);
 });
 
+// Функция для старта бота
 async function startBot() {
   await loadCoffeeData();
   
-  // Запуск бота через веб-хук
+  // Установка вебхука
   const webhookUrl = `${process.env.VERCEL_URL}/bot${process.env.TELEGRAM_BOT_TOKEN_ALFA}`;
   console.log(`Setting webhook to: ${webhookUrl}`);
   await mainBot.telegram.setWebhook(webhookUrl);
 
   const app = express();
+
+  // Маршрут для обработки вебхука
   app.use(mainBot.webhookCallback(`/bot${process.env.TELEGRAM_BOT_TOKEN_ALFA}`));
 
-  // Запуск сервера Express
+  // Простой маршрут для проверки сервера
+  app.get('/', (req, res) => {
+    res.send('Server is running!');
+  });
+
+  // Запуск сервера на порту 3000
   app.listen(3000, () => {
     console.log('Server is running on port 3000');
   });
 }
 
+// Запуск бота
 startBot().catch(error => {
   console.error('Error starting bots:', error);
 });
 
+// Остановка ботов при завершении процесса
 process.once('SIGINT', () => {
   mainBot.stop('SIGINT');
   logBot.stop('SIGINT');
@@ -230,7 +250,6 @@ process.once('SIGTERM', () => {
   logBot.stop('SIGTERM');
   dataBot.stop('SIGTERM');
 });
-
 
 
 
