@@ -203,7 +203,10 @@ async function startBot() {
   await loadCoffeeData();
   
   // Запуск бота через веб-хук
-  mainBot.telegram.setWebhook(`${process.env.VERCEL_URL}/bot${process.env.TELEGRAM_BOT_TOKEN_ALFA}`);
+  const webhookUrl = `${process.env.VERCEL_URL}/bot${process.env.TELEGRAM_BOT_TOKEN_ALFA}`;
+  console.log(`Setting webhook to: ${webhookUrl}`);
+  await mainBot.telegram.setWebhook(webhookUrl);
+
   const app = express();
   app.use(mainBot.webhookCallback(`/bot${process.env.TELEGRAM_BOT_TOKEN_ALFA}`));
 
@@ -227,7 +230,6 @@ process.once('SIGTERM', () => {
   logBot.stop('SIGTERM');
   dataBot.stop('SIGTERM');
 });
-
 
 
 
