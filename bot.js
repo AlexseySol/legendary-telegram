@@ -1,13 +1,13 @@
-require('dotenv').config();
+// bot.js
 const { Telegraf } = require('telegraf');
 const fetch = require('node-fetch');
 const fs = require('fs').promises;
 const { promptTemplate } = require('./prompt.js');
 
 // Инициализация ботов с токенами из переменных окружения
-const mainBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN_ALFA); // Основной бот
-const logBot = new Telegraf(process.env.NEW_TELEGRAM_BOT_TOKEN); // Бот для логов
-const dataBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN); // Бот для данных
+const mainBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN_ALFA);
+const logBot = new Telegraf(process.env.NEW_TELEGRAM_BOT_TOKEN);
+const dataBot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 let coffeeData = {};
 let userStates = {};
@@ -61,7 +61,6 @@ function validateTags(tags) {
     console.log(`Missing required tags: ${missingTags.join(', ')}`);
     return false;
   }
-
   return true;
 }
 
@@ -111,7 +110,7 @@ async function fetchWithRetry(url, options, maxRetries = 3, initialDelay = 1000)
 
 // Основная функция обработки сообщений от пользователей
 async function processMessage(userId, userName, userMessage) {
-  console.log(`Processing message from ${userName} (${userId}): ${userMessage}`); // Отладка
+  console.log(`Processing message from ${userName} (${userId}): ${userMessage}`);
 
   if (!userStates[userId]) {
     userStates[userId] = { 
@@ -150,7 +149,7 @@ async function processMessage(userId, userName, userMessage) {
 
     if (data && data.content && data.content[0] && data.content[0].text) {
       const replyMessage = data.content[0].text;
-      console.log(`Received response from API: ${replyMessage}`); // Отладка
+      console.log(`Received response from API: ${replyMessage}`);
       
       const responseMatch = replyMessage.match(/<response>([\s\S]*?)<\/response>/);
       if (responseMatch) {
@@ -170,7 +169,6 @@ async function processMessage(userId, userName, userMessage) {
 
         const cleanResponse = responseContent.replace(/<[^>]+>.*?<\/[^>]+>/g, '');
 
-        // Отправляем запрос и ответ в лог-чат в одном сообщении
         const logMessage = `Диалог:\nUser ${userName}: ${userMessage}\nBot: ${cleanResponse}`;
         await logBot.telegram.sendMessage(process.env.NEW_TELEGRAM_CHAT_ID, logMessage);
 
@@ -202,13 +200,13 @@ mainBot.start((ctx) => {
 
 // Обработка текстовых сообщений
 mainBot.on('text', async (ctx) => {
-  console.log('Received a message from Telegram'); // Отладка
+  console.log('Received a message from Telegram');
   const userId = ctx.from.id.toString();
   const userName = ctx.from.first_name || ctx.from.username;
   const userMessage = ctx.message.text;
 
   const response = await processMessage(userId, userName, userMessage);
-  console.log(`Sending response to ${userName} (${userId}): ${response}`); // Отладка
+  console.log(`Sending response to ${userName} (${userId}): ${response}`);
   ctx.reply(response);
 });
 
@@ -220,22 +218,14 @@ async function initBot() {
 
 // Функция для обработки вебхука
 module.exports = async (req, res) => {
-  await initBot();
-  
   if (req.method === 'POST') {
+    await initBot();
     await mainBot.handleUpdate(req.body, res);
+    res.status(200).send('OK');
   } else {
     res.status(200).json({ message: 'Webhook is set up correctly' });
   }
 };
-
-// Экспорт ботов для использования в других частях приложения, если необходимо
-module.exports.mainBot = mainBot;
-module.exports.logBot = logBot;
-module.exports.dataBot = dataBot;
-
-
-
 
 
 
